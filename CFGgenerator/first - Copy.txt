@@ -1,0 +1,44 @@
+0 : iconst_0
+1 : istore_1
+2 : aload_0
+3 : dup
+4 : astore_2
+5 : monitorenter
+6 : goto          18
+9 : aload_0
+10 : aconst_null
+11 : putfield      #19                 // Field list:Ljava/util/LinkedList;
+14 : aload_0
+15 : invokevirtual #31                 // Method java/lang/Object.wait:()V
+18 : aload_0
+19 : getfield      #19                 // Field list:Ljava/util/LinkedList;
+22 : invokevirtual #34                 // Method java/util/LinkedList.size:()I
+25 : aload_0
+26 : getfield      #21                 // Field capacity:I
+29 : if_icmpeq     9
+32 : getstatic     #38                 // Field java/lang/System.out:Ljava/io/PrintStream;
+35 : new           #44                 // class java/lang/StringBuilder
+38 : dup
+39 : ldc           #46                 // String Producer produced-
+41 : invokespecial #48                 // Method java/lang/StringBuilder."<init>":(Ljava/lang/String;)V
+44 : iload_1
+45 : invokevirtual #51                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+48 : invokevirtual #55                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+51 : invokevirtual #59                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+54 : aload_0
+55 : getfield      #19                 // Field list:Ljava/util/LinkedList;
+58 : iload_1
+59 : iinc          1, 1
+62 : invokestatic  #64                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+65 : invokevirtual #70                 // Method java/util/LinkedList.add:(Ljava/lang/Object;)Z
+68 : pop
+69 : aload_0
+70 : invokevirtual #74                 // Method java/lang/Object.notify:()V
+73 : ldc2_w        #77                 // long 1000l
+76 : invokestatic  #79                 // Method java/lang/Thread.sleep:(J)V
+79 : aload_2
+80 : monitorexit
+81 : goto          2
+84 : aload_2
+85 : monitorexit
+86 : athrow
