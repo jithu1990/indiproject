@@ -2,6 +2,7 @@
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -22,11 +23,13 @@ public class GraphGenerator {
 
 	BasicBlock[] bb;
 	int[][] edges;
+	ArrayList<Integer> gotoList;
 	DirectedSparseGraph<String, String> g;
 
-	void generateGraph(BasicBlock[] b, int[][] edges) {
+	void generateGraph(BasicBlock[] b, int[][] edges,ArrayList<Integer> gotoList) {
 		bb = b;
 		this.edges = edges;
+		this.gotoList=gotoList;
 
 		g = new DirectedSparseGraph<String, String>();
 
@@ -42,13 +45,16 @@ public class GraphGenerator {
 			if (i == bb.length - 1) {
 				break;
 			}
+			if(checkIfGotoPresent(i)){
 			g.addEdge("edge" + i, bb[i].getBlockName(), bb[i + 1].getBlockName());
+			}
+			
 		}
 
 		for (int i = 0; i < edges.length; i++) {
 
 			int from = edges[i][0], to = edges[i][1];
-			System.out.println("edgeLIst: from : " + edges[i][0] + "to : " + edges[i][1]);
+			
 			if (findNode(from) == null || findNode(to) == null || edges[i][0] == 0 || edges[i][1] == 0) {
 				continue;
 			}
@@ -77,7 +83,7 @@ public class GraphGenerator {
 		frame.getContentPane().add(vv);
 		frame.pack();
 		frame.setVisible(true);
-		System.out.println("edgelist is:" + g.getEndpoints("goto11"));
+		System.out.println("edgelist is:" + g.getEdges());
 		findHappensBefore();
 
 	}
@@ -87,7 +93,7 @@ public class GraphGenerator {
 		
 		Iterator<String> iterator = edgelist.iterator();
 		Set<Pair> pairs = new HashSet<Pair>();
-		;
+	
 		while (iterator.hasNext()) {
 			edu.uci.ics.jung.graph.util.Pair<String> edge = g.getEndpoints(iterator.next());
 
@@ -115,6 +121,12 @@ public class GraphGenerator {
 		}
 		return null;
 	}
+	
+	/*function to check if goto present in given block*/
+	Boolean checkIfGotoPresent(int i){
+		ArrayList<Integer> ar = bb[i].getInstLines();
+		return Collections.disjoint(gotoList, ar);
+		}
 
 	public class Pair {
 		String before;

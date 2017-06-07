@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 import java.util.stream.IntStream;
@@ -14,8 +15,9 @@ public class CFGconstructor {
 	int numberofLeaders = 0, row = 0;
 	boolean leaderSwitch = false;
 	int[] leaders, leadersFinal;
+	ArrayList<Integer> gotoList;
 	BasicBlock[] basicBlock;
-	String fileName = "F:\\individual_project\\programs\\null pointer exception\\casestudy1\\bin\\casestudy1\\bytecode_formatted.txt";
+	String fileName = "F:\\individual_project\\repositories\\casestudy1\\bin\\casestudy1\\bytecode.txt";
 
 	int[][] edge;
 
@@ -24,6 +26,7 @@ public class CFGconstructor {
 		leaders = new int[20];
 		leaders[numberofLeaders++] = 0;
 		edge = new int[10][2];
+		gotoList=new ArrayList<>();
 
 	}
 
@@ -91,6 +94,7 @@ public class CFGconstructor {
 					edge[row][0] = presentAddress;
 					edge[row][1] = targetAddress;
 					row++;
+					gotoList.add(presentAddress);
 
 				}
 
@@ -233,7 +237,7 @@ public class CFGconstructor {
 		basicBlock[numberofLeaders].setLeader(0);
 
 		GraphGenerator g = new GraphGenerator();
-		g.generateGraph(basicBlock, edge);
+		g.generateGraph(basicBlock, edge,gotoList);
 
 	}
 
