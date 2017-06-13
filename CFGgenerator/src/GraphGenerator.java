@@ -25,6 +25,7 @@ public class GraphGenerator {
 	int[][] edges;
 	ArrayList<Integer> gotoList;
 	DirectedSparseGraph<String, String> g;
+	DirectedSparseGraph<String, String> g1;
 
 	void generateGraph(BasicBlock[] b, int[][] edges,ArrayList<Integer> gotoList) {
 		bb = b;
@@ -32,6 +33,7 @@ public class GraphGenerator {
 		this.gotoList=gotoList;
 
 		g = new DirectedSparseGraph<String, String>();
+		
 
 		// Add some vertices. From above we defined these to be type Integer.
 		for (int i = 0; i < bb.length; i++) {

@@ -17,7 +17,8 @@ public class CFGconstructor {
 	int[] leaders, leadersFinal;
 	ArrayList<Integer> gotoList;
 	BasicBlock[] basicBlock;
-	String fileName = "F:\\individual_project\\repositories\\casestudy1\\bin\\casestudy1\\bytecode.txt";
+	CodeStore code1;
+	String fileName = "F:\\individual_project\\bytecodes\\caseStudy1_thread2.txt";
 
 	int[][] edge;
 
@@ -27,6 +28,7 @@ public class CFGconstructor {
 		leaders[numberofLeaders++] = 0;
 		edge = new int[10][2];
 		gotoList=new ArrayList<>();
+		code1=new CodeStore();
 
 	}
 
@@ -42,6 +44,12 @@ public class CFGconstructor {
 		String currentLine;
 		while ((currentLine = br.readLine()) != null) {
 			StringTokenizer st = new StringTokenizer(currentLine);
+			/*add each codeline to codestore*/
+			if(true){
+				String addr=st.nextToken();
+				code1.addCodeEntry(Integer.parseInt(addr), currentLine);
+				st=new StringTokenizer(currentLine);
+			}
 			if (leaderSwitch) {
 
 				String addr = st.nextToken();
@@ -144,11 +152,11 @@ public class CFGconstructor {
 
 			}
 		}
-		System.out.println(Arrays.toString(leadersFinal));
+		//System.out.println(Arrays.toString(leadersFinal));
 		leadersFinal = IntStream.of(leadersFinal).distinct().toArray();
 		numberofLeaders = leadersFinal.length;
 		Arrays.sort(leadersFinal);
-		System.out.println("final leaders are: " +Arrays.toString(leadersFinal));
+		//System.out.println("final leaders are: " +Arrays.toString(leadersFinal));
 		for (int i = 0; i < edge.length; i++) {
 			for (int j = 0; j < edge[i].length; j++) {
 				System.out.print(edge[i][j]);
