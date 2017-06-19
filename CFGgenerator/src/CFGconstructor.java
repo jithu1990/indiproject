@@ -5,6 +5,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Stack;
 import java.util.StringTokenizer;
 import java.util.stream.IntStream;
 
@@ -12,23 +15,29 @@ import javax.swing.JFileChooser;
 
 public class CFGconstructor {
 	BufferedReader br = null;
-	int numberofLeaders = 0, row = 0;
+	int numberofLeaders = 0, row = 0,blockid;
 	boolean leaderSwitch = false;
 	int[] leaders, leadersFinal;
 	ArrayList<Integer> gotoList;
 	BasicBlock[] basicBlock;
 	CodeStore code1;
-	String fileName = "F:\\individual_project\\bytecodes\\caseStudy1_thread2.txt";
+	String fileName,currentAddr;
+	Queue waitQueue,notifyQueue ;
+	
 
 	int[][] edge;
-
-	public CFGconstructor() {
-
+	 
+	public CFGconstructor(String fileName,int blockid) {
+		this.fileName=fileName;
+		this.blockid=blockid;
 		leaders = new int[20];
 		leaders[numberofLeaders++] = 0;
 		edge = new int[10][2];
 		gotoList=new ArrayList<>();
 		code1=new CodeStore();
+		waitQueue= new LinkedList();;
+		notifyQueue= new LinkedList();{
+		}
 
 	}
 
@@ -47,6 +56,7 @@ public class CFGconstructor {
 			/*add each codeline to codestore*/
 			if(true){
 				String addr=st.nextToken();
+				currentAddr=addr;
 				code1.addCodeEntry(Integer.parseInt(addr), currentLine);
 				st=new StringTokenizer(currentLine);
 			}
@@ -67,9 +77,14 @@ public class CFGconstructor {
 				if (token.equals(":")) {
 					// continue;
 				}
-
-				if (token.contains("wait()") || token.contains("notify()")) {
-
+				
+				
+				if (token.contains("wait")) {
+					waitQueue.add(currentAddr);
+				}
+				
+				if (token.contains("notify")) {
+					notifyQueue.add(currentAddr);
 				}
 
 				if (token.equals("monitorenter")) {
@@ -127,6 +142,14 @@ public class CFGconstructor {
 
 	}
 
+	public Queue getWaitStack() {
+		return waitQueue;
+	}
+
+	public Queue getNotifyStack() {
+		return notifyQueue;
+	}
+
 	private String filePicker() {
 		JFileChooser fileChooser = new JFileChooser();
 		// fileChooser.setCurrentDirectory(new
@@ -172,29 +195,30 @@ public class CFGconstructor {
 	}
 
 	void basicBlockGenerator() throws IOException {
+		
 		basicBlock = new BasicBlock[numberofLeaders + 1];
 		for (int i = 0; i < numberofLeaders + 1; i++) {
 			basicBlock[i] = new BasicBlock();
 		}
 		basicBlock[0].setBlockName("start");
 		basicBlock[0].setPrevBlock("null");
-		basicBlock[0].setNextBlock("b0");
+		basicBlock[0].setNextBlock("b00");
 		basicBlock[0].setLeader(0);
 		int i;
 		for (i = 0; i < numberofLeaders; i++) {
 
-			basicBlock[i].setBlockName("b" + i);
+			basicBlock[i].setBlockName("b" +blockid+ i);
 			basicBlock[i].setLeader(leadersFinal[i]);
 			if (i == 0) {
 				basicBlock[i].setPrevBlock("start");
 
 			} else {
-				basicBlock[i].setPrevBlock("b" + (i - 1));
+				basicBlock[i].setPrevBlock("b" +blockid+ (i - 1));
 			}
 			if (i == numberofLeaders - 1) {
 				basicBlock[i].setNextBlock("stop");
 			} else {
-				basicBlock[i].setNextBlock("b" + (i + 1));
+				basicBlock[i].setNextBlock("b" +blockid+ (i + 1));
 			}
 
 			try {
@@ -240,13 +264,28 @@ public class CFGconstructor {
 
 		}
 		basicBlock[numberofLeaders].setBlockName("stop");
-		basicBlock[numberofLeaders].setPrevBlock("b" + i);
+		basicBlock[numberofLeaders].setPrevBlock("b" +blockid+ i);
 		basicBlock[numberofLeaders].setNextBlock("null");
 		basicBlock[numberofLeaders].setLeader(0);
 
-		GraphGenerator g = new GraphGenerator();
-		g.generateGraph(basicBlock, edge,gotoList);
+		
 
+	}
+
+	public ArrayList<Integer> getGotoList() {
+		return gotoList;
+	}
+
+	public void setGotoList(ArrayList<Integer> gotoList) {
+		this.gotoList = gotoList;
+	}
+
+	public BasicBlock[] getBasicBlock() {
+		return basicBlock;
+	}
+
+	public int[][] getEdge() {
+		return edge;
 	}
 
 	void printblock() {

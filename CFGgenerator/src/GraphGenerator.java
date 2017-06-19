@@ -1,23 +1,30 @@
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Stack;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
-import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.graph.SparseMultigraph;
-import edu.uci.ics.jung.graph.util.EdgeType;
 import edu.uci.ics.jung.visualization.BasicVisualizationServer;
+import edu.uci.ics.jung.visualization.VisualizationImageServer;
+import edu.uci.ics.jung.visualization.decorators.EdgeShape;
+import edu.uci.ics.jung.visualization.renderers.*;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
+
 
 public class GraphGenerator {
 
@@ -26,14 +33,16 @@ public class GraphGenerator {
 	ArrayList<Integer> gotoList;
 	DirectedSparseGraph<String, String> g;
 	DirectedSparseGraph<String, String> g1;
+	int gotoEdgeLabel = 0;
 
-	void generateGraph(BasicBlock[] b, int[][] edges,ArrayList<Integer> gotoList) {
+	public GraphGenerator() {
+		g = new DirectedSparseGraph<String, String>();
+	}
+
+	void generateGraph(BasicBlock[] b, int[][] edges, ArrayList<Integer> gotoList) {
 		bb = b;
 		this.edges = edges;
-		this.gotoList=gotoList;
-
-		g = new DirectedSparseGraph<String, String>();
-		
+		this.gotoList = gotoList;
 
 		// Add some vertices. From above we defined these to be type Integer.
 		for (int i = 0; i < bb.length; i++) {
@@ -47,21 +56,27 @@ public class GraphGenerator {
 			if (i == bb.length - 1) {
 				break;
 			}
-			if(checkIfGotoPresent(i)){
-			g.addEdge("edge" + i, bb[i].getBlockName(), bb[i + 1].getBlockName());
+			if (checkIfGotoPresent(i)) {
+				g.addEdge("edge" + bb[i].getBlockName() + bb[i + 1].getBlockName(), bb[i].getBlockName(),
+						bb[i + 1].getBlockName());
 			}
-			
+
 		}
 
 		for (int i = 0; i < edges.length; i++) {
-
+			gotoEdgeLabel++;
 			int from = edges[i][0], to = edges[i][1];
-			
-			if (findNode(from) == null || findNode(to) == null || edges[i][0] == 0 || edges[i][1] == 0) {
+
+//			if (findNode(from) == null || findNode(to) == null || edges[i][0] == 0 || edges[i][1] == 0) {
+//				continue;
+//			}
+			if (findNode(from) == null || findNode(to) == null) {
 				continue;
 			}
-			g.addEdge("goto" + i + i, findNode(from), findNode(to));
-
+			if (edges[i][0] == 0 && edges[i][1] == 0) {
+				continue;
+			}
+			g.addEdge("goto" + findNode(from)+findNode(to), findNode(from), findNode(to));
 		}
 
 		// Let's see what we have. Note the nice output from the
@@ -70,12 +85,20 @@ public class GraphGenerator {
 		// Note that we can use the same nodes and edges in two different
 		// graphs.
 
+		// findHappensBefore();
+
+	}
+
+	void renderGraph() {
 		Layout<String, String> layout = new FRLayout<String, String>(g);
-		layout.setSize(new Dimension(500, 500)); // sets the initial size of the
+		layout.setSize(new Dimension(600,600)); // sets the initial size of the
 													// space
 		// The BasicVisualizationServer<V,E> is parameterized by the edge types
 		BasicVisualizationServer<String, String> vv = new BasicVisualizationServer<String, String>(layout);
-		vv.setPreferredSize(new Dimension(500, 500)); // Sets the viewing area
+		VisualizationImageServer<String, String> viz = new VisualizationImageServer<String,String>(vv.getGraphLayout(),
+		        vv.getGraphLayout().getSize());
+		
+		vv.setPreferredSize(new Dimension(400, 400)); // Sets the viewing area
 														// size
 
 		vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
@@ -86,16 +109,59 @@ public class GraphGenerator {
 		frame.pack();
 		frame.setVisible(true);
 		System.out.println("edgelist is:" + g.getEdges());
-		findHappensBefore();
+		
+		viz.setBackground(Color.WHITE);
+		viz.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<String>());
+		viz.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<String, String>());
+		viz.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<String>());
+		viz.getRenderer().getVertexLabelRenderer()
+		    .setPosition(Renderer.VertexLabel.Position.CNTR);
+		
+		BufferedImage image = (BufferedImage) viz.getImage(
+			    new Point2D.Double(vv.getGraphLayout().getSize().getWidth() / 2,
+			    vv.getGraphLayout().getSize().getHeight() / 2),
+			    new Dimension(vv.getGraphLayout().getSize()));
+		
+		File outputfile = new File("graph.png");
 
+		try {
+		    ImageIO.write(image, "png", outputfile);
+		} catch (IOException e) {
+		    // Exception handling
+		}
 	}
 
+	void genInterThreadComm(Stack waitStack, Stack notifyStack ){
+		
+		Iterator stackIter=waitStack.iterator();
+		while (stackIter.hasNext()){
+		int from = Integer.parseInt((String) notifyStack.pop()) , to = Integer.parseInt((String) waitStack.pop());
+
+//		if (findNode(from) == null || findNode(to) == null || edges[i][0] == 0 || edges[i][1] == 0) {
+//			continue;
+//		}
+		
+		String fromNode = findNode(from);
+		String toNode = findNode(to);
+		if (findNode(from) == null || findNode(to) == null) {
+			continue;
+		}
+		g.addEdge("inter" + findNode(from)+findNode(to), fromNode, toNode);
+		}
+		System.out.println("edgelist is:" + g.getEdges());
+	}
+	
+	
+	void addInterEdge(String name,String fromNode,String toNode){
+		g.addEdge("inter" + name, fromNode, toNode);
+	}
+	
 	void findHappensBefore() {
 		Collection<String> edgelist = g.getEdges();
-		
+
 		Iterator<String> iterator = edgelist.iterator();
 		Set<Pair> pairs = new HashSet<Pair>();
-	
+
 		while (iterator.hasNext()) {
 			edu.uci.ics.jung.graph.util.Pair<String> edge = g.getEndpoints(iterator.next());
 
@@ -106,7 +172,6 @@ public class GraphGenerator {
 			Pair item = iterator1.next();
 			System.out.println(item.before + ">" + item.after);
 		}
-
 	}
 
 	String findNode(int instrNo) {
@@ -123,12 +188,12 @@ public class GraphGenerator {
 		}
 		return null;
 	}
-	
-	/*function to check if goto present in given block*/
-	Boolean checkIfGotoPresent(int i){
+
+	/* function to check if goto present in given block */
+	Boolean checkIfGotoPresent(int i) {
 		ArrayList<Integer> ar = bb[i].getInstLines();
 		return Collections.disjoint(gotoList, ar);
-		}
+	}
 
 	public class Pair {
 		String before;
