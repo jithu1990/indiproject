@@ -1,6 +1,8 @@
+package in.msruas.project;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Paint;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -15,6 +17,8 @@ import java.util.Stack;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+
+import org.apache.commons.collections15.Transformer;
 
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
@@ -34,12 +38,14 @@ public class GraphGenerator {
 	DirectedSparseGraph<String, String> g;
 	DirectedSparseGraph<String, String> g1;
 	int gotoEdgeLabel = 0;
+	HappensBefore hb;
 
 	public GraphGenerator() {
 		g = new DirectedSparseGraph<String, String>();
+		hb=HappensBefore.getInstance();
 	}
 
-	void generateGraph(BasicBlock[] b, int[][] edges, ArrayList<Integer> gotoList) {
+	public void generateGraph(BasicBlock[] b, int[][] edges, ArrayList<Integer> gotoList) {
 		bb = b;
 		this.edges = edges;
 		this.gotoList = gotoList;
@@ -89,7 +95,7 @@ public class GraphGenerator {
 
 	}
 
-	void renderGraph() {
+	public void renderGraph() {
 		Layout<String, String> layout = new FRLayout<String, String>(g);
 		layout.setSize(new Dimension(600,600)); // sets the initial size of the
 													// space
@@ -102,6 +108,17 @@ public class GraphGenerator {
 														// size
 
 		vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
+		
+		//color of vertex
+		Transformer<String,Paint> vertexPaint = new Transformer<String,Paint>() {
+	        public Paint transform(String i) {
+	        	if(i.contains("b17"))
+	        		return Color.GREEN;
+	        	else
+		        	return Color.RED;
+	        }
+	        
+	    };
 
 		JFrame frame = new JFrame("Simple Graph View");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -116,6 +133,7 @@ public class GraphGenerator {
 		viz.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<String>());
 		viz.getRenderer().getVertexLabelRenderer()
 		    .setPosition(Renderer.VertexLabel.Position.CNTR);
+		vv.getRenderContext().setVertexFillPaintTransformer(vertexPaint);
 		
 		BufferedImage image = (BufferedImage) viz.getImage(
 			    new Point2D.Double(vv.getGraphLayout().getSize().getWidth() / 2,
@@ -156,8 +174,10 @@ public class GraphGenerator {
 		g.addEdge("inter" + name, fromNode, toNode);
 	}
 	
-	void findHappensBefore() {
+	public void findHappensBefore() {
 		Collection<String> edgelist = g.getEdges();
+		
+		
 
 		Iterator<String> iterator = edgelist.iterator();
 		Set<Pair> pairs = new HashSet<Pair>();
@@ -170,7 +190,8 @@ public class GraphGenerator {
 		Iterator<Pair> iterator1 = pairs.iterator();
 		while (iterator1.hasNext()) {
 			Pair item = iterator1.next();
-			System.out.println(item.before + ">" + item.after);
+			//System.out.println(item.before + ">" + item.after);
+			hb.addHB(item.before, item.after);
 		}
 	}
 

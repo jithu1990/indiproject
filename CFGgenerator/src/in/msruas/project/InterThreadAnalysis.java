@@ -1,3 +1,4 @@
+package in.msruas.project;
 import java.util.ArrayList;
 import java.util.Queue;
 
@@ -9,18 +10,17 @@ public class InterThreadAnalysis {
 	//Queue waitQueue,notifyQueue;
 	
 
-	public InterThreadAnalysis(String filePath1, String filePath2, BasicBlock[] bb1, BasicBlock[] bb2,
+	public InterThreadAnalysis(BasicBlock[] bb1, BasicBlock[] bb2,
 			GraphGenerator g) {
 		super();
-		this.filePath1 = filePath1;
-		this.filePath2 = filePath2;
+		
 		this.bb1 = bb1;
 		this.bb2 = bb2;
 		this.g=g;
 	}
 
 
-	void computerInterThreadEdges(Queue waitQ1,Queue notifyQ1,Queue waitQ2,Queue notifyQ2){
+	public void computerInterThreadEdges(Queue waitQ1,Queue notifyQ1,Queue waitQ2,Queue notifyQ2){
 		
 		for(Object item : notifyQ1){
 			int from = Integer.parseInt((String) notifyQ1.remove()) , to = Integer.parseInt((String) waitQ2.remove());

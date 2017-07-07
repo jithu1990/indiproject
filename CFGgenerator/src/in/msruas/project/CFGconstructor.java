@@ -1,3 +1,4 @@
+package in.msruas.project;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,6 +14,8 @@ import java.util.stream.IntStream;
 
 import javax.swing.JFileChooser;
 
+import com.sun.corba.se.impl.orbutil.concurrent.Sync;
+
 public class CFGconstructor {
 	BufferedReader br = null;
 	int numberofLeaders = 0, row = 0,blockid;
@@ -23,6 +26,10 @@ public class CFGconstructor {
 	CodeStore code1;
 	String fileName,currentAddr;
 	Queue waitQueue,notifyQueue ;
+	NPAnalyzer npAnalyze;
+	Nodes nodes;
+	SyncBlock sb;
+	SyncBlocksOps sbo;
 	
 
 	int[][] edge;
@@ -34,10 +41,14 @@ public class CFGconstructor {
 		leaders[numberofLeaders++] = 0;
 		edge = new int[10][2];
 		gotoList=new ArrayList<>();
-		code1=new CodeStore();
+		code1=CodeStore.getInstance();
+		npAnalyze=NPAnalyzer.getInstance();
 		waitQueue= new LinkedList();;
-		notifyQueue= new LinkedList();{
-		}
+		notifyQueue= new LinkedList();
+		nodes=Nodes.getInstance();
+		sb=new SyncBlock(fileName);
+		sbo= sbo.getInstance();
+		
 
 	}
 
@@ -57,8 +68,9 @@ public class CFGconstructor {
 			if(true){
 				String addr=st.nextToken();
 				currentAddr=addr;
-				code1.addCodeEntry(Integer.parseInt(addr), currentLine);
+				code1.addCodeEntry(fileName,Integer.parseInt(addr), currentLine);
 				st=new StringTokenizer(currentLine);
+
 			}
 			if (leaderSwitch) {
 
@@ -81,10 +93,16 @@ public class CFGconstructor {
 				
 				if (token.contains("wait")) {
 					waitQueue.add(currentAddr);
+					sb.setWaitList(Integer.parseInt(currentAddr));
+					leaders[numberofLeaders++] = Integer.parseInt(currentAddr);
+					//leaderSwitch=true;
+					continue;
 				}
 				
 				if (token.contains("notify")) {
 					notifyQueue.add(currentAddr);
+					sb.setNotifyList(Integer.parseInt(currentAddr));
+					leaders[numberofLeaders++] = Integer.parseInt(currentAddr);
 				}
 
 				if (token.equals("monitorenter")) {
@@ -94,6 +112,7 @@ public class CFGconstructor {
 
 					// monitorenter and monitorexit instruction are leaders
 					int presentAddress = Integer.parseInt(addr);
+					sb.setEnterLine(presentAddress);
 					leaders[numberofLeaders++] = presentAddress;
 					System.out.println("leader: " + leaders[numberofLeaders - 1]);
 
@@ -101,6 +120,7 @@ public class CFGconstructor {
 
 				if (token.equals("monitorexit")) {
 					leaderSwitch = true;
+					sb.setExitLine(Integer.parseInt(currentAddr));
 				}
 
 				if (token.equals("goto") || token.equals("goto_w") || token.equals("jsr") || token.equals("jsr_w")
@@ -139,7 +159,7 @@ public class CFGconstructor {
 
 			} // end of while loop when currntLine doen't has no more tokens
 		} // end of while loop when there is no more lines to read in file
-
+sbo.setSyncBlock(sb);
 	}
 
 	public Queue getWaitStack() {
@@ -163,7 +183,7 @@ public class CFGconstructor {
 	}
 
 	/*function to sort the leaders and remove zeors in unassigned space of array.*/
-	int[][] sortLeaders() {
+	public int[][] sortLeaders() {
 		leadersFinal = new int[numberofLeaders]; 
 		int index = 0;
 		/*copy each element from leaders to leadersfinal array avoiding zero's*/
@@ -194,7 +214,7 @@ public class CFGconstructor {
 		return null;
 	}
 
-	void basicBlockGenerator() throws IOException {
+	public void basicBlockGenerator() throws IOException {
 		
 		basicBlock = new BasicBlock[numberofLeaders + 1];
 		for (int i = 0; i < numberofLeaders + 1; i++) {
@@ -267,6 +287,7 @@ public class CFGconstructor {
 		basicBlock[numberofLeaders].setPrevBlock("b" +blockid+ i);
 		basicBlock[numberofLeaders].setNextBlock("null");
 		basicBlock[numberofLeaders].setLeader(0);
+		nodes.setNodesMap(this.fileName, basicBlock);
 
 		
 
