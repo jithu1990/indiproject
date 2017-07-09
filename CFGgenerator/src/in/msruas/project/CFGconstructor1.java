@@ -1,4 +1,5 @@
 package in.msruas.project;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,15 +9,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Stack;
 import java.util.StringTokenizer;
 import java.util.stream.IntStream;
 
 import javax.swing.JFileChooser;
 
-import com.sun.corba.se.impl.orbutil.concurrent.Sync;
+public class CFGconstructor1 {
 
-public class CFGconstructor {
 	BufferedReader br = null;
 	int numberofLeaders = 0, row = 0,blockid;
 	boolean leaderSwitch = false;
@@ -37,7 +36,7 @@ public class CFGconstructor {
 
 	int[][] edge;
 	 
-	public CFGconstructor(String fileName,int blockid) {
+	public CFGconstructor1(String fileName,int blockid) {
 		this.fileName=fileName;
 		this.blockid=blockid;
 		leaders = new int[20];
@@ -331,5 +330,6 @@ wno.setWnList(wn);
 			System.out.println("basic block lines: " + basicBlock[i].getInstLines());
 		}
 	}
+
 
 }

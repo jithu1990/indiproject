@@ -3,10 +3,12 @@ package in.msruas.project;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Stack;
 
 public class SyncBlock {
 	public String fileName;
-	public Queue enterLine,exitLine;
+	public Queue enterLine;
+	public Stack exitLine;
 	public ArrayList waitList,notifyList;
 	
 	
@@ -15,14 +17,14 @@ public class SyncBlock {
 		waitList=new ArrayList<>();
 		notifyList=new ArrayList<>();
 		enterLine= new LinkedList<>();
-		exitLine=new LinkedList<>();
+		exitLine=new Stack();
 	}
 
 	SyncBlock (String fileName2){
 		waitList=new ArrayList<>();
 		notifyList=new ArrayList<>();
 		enterLine= new LinkedList<>();
-		exitLine=new LinkedList<>();
+		exitLine=new Stack();
 		this.fileName=fileName2;
 	}
 	
@@ -57,12 +59,12 @@ public class SyncBlock {
 		enterLine.add(line);
 	}
 
-	public Queue getExitLine() {
+	public Stack getExitLine() {
 		return exitLine;
 	}
 
 	public void setExitLine(int line) {
-		exitLine.add(line);
+		exitLine.push(line);
 	}
 	
 	

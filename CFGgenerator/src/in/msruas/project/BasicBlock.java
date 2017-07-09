@@ -2,7 +2,7 @@ package in.msruas.project;
 import java.util.ArrayList;
 
 public class BasicBlock {
-	String blockName, prevBlock, nextBlock;
+	String blockName, prevBlock, nextBlock, filename;
 	int leader, lastInst;
 	ArrayList<Integer> instLines;
 

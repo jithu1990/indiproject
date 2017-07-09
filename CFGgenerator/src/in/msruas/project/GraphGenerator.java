@@ -12,6 +12,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
 
@@ -32,17 +34,21 @@ import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 
 public class GraphGenerator {
 
-	BasicBlock[] bb;
+	static BasicBlock[] bb;
 	int[][] edges;
 	ArrayList<Integer> gotoList;
 	DirectedSparseGraph<String, String> g;
 	DirectedSparseGraph<String, String> g1;
 	int gotoEdgeLabel = 0;
 	HappensBefore hb;
+	SyncBlocksOps sbo;
+	BasicBlockOps bbo;
 
 	public GraphGenerator() {
 		g = new DirectedSparseGraph<String, String>();
 		hb=HappensBefore.getInstance();
+		sbo=SyncBlocksOps.getInstance();
+		bbo=BasicBlockOps.getInstance();
 	}
 
 	public void generateGraph(BasicBlock[] b, int[][] edges, ArrayList<Integer> gotoList) {
@@ -112,10 +118,11 @@ public class GraphGenerator {
 		//color of vertex
 		Transformer<String,Paint> vertexPaint = new Transformer<String,Paint>() {
 	        public Paint transform(String i) {
-	        	if(i.contains("b17"))
+	        	System.out.println("i is "+i);
+	        	if(isSyncBlock(i))
 	        		return Color.GREEN;
 	        	else
-		        	return Color.RED;
+	        	  	return Color.RED;
 	        }
 	        
 	    };
@@ -209,6 +216,21 @@ public class GraphGenerator {
 		}
 		return null;
 	}
+	
+	
+	/*function to find basic block when a block name is give */
+	public BasicBlock findBasicBlock(String name){
+		ArrayList<BasicBlock> bbarray = bbo.getBasicBlock();
+		for (BasicBlock bb : bbarray) {
+			if (bb.getBlockName()==name){
+				return bb;
+			}
+
+			}
+		
+		return null;
+		
+	}
 
 	/* function to check if goto present in given block */
 	Boolean checkIfGotoPresent(int i) {
@@ -224,5 +246,35 @@ public class GraphGenerator {
 			before = first;
 			after = second;
 		}
+	}
+	
+	public boolean isSyncBlock(String i){
+		ArrayList<SyncBlock> ar=sbo.getSyncBlock();
+		BasicBlock b;
+		Queue enterQ;
+		Stack exitStack;
+		String fname;
+		b=findBasicBlock(i);
+		if(b==null){
+			return false;
+		}
+		for (SyncBlock sb : ar) {
+			
+			if (sb.getFileName().equals(b.filename)){
+				enterQ= new LinkedList<>(sb.getEnterLine());		// should do this or refernce of queue is passes and the values gets dequed 
+				exitStack=sb.getExitLine();		
+				exitStack=(Stack) exitStack.clone();	//should clone or reference of stack is passed.
+				while(!enterQ.isEmpty()){
+					if(((Integer) enterQ.remove())<=b.getLeader()&&b.getLeader()<=((Integer) exitStack.pop())){
+						System.out.println("block " + b.getBlockName() + "is synchornized block");
+						return true;
+					}
+				}
+			}
+			
+			
+		}
+		return false;
+		
 	}
 }

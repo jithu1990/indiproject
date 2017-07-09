@@ -7,16 +7,17 @@ public class InterThreadAnalysis {
 	String filePath1,filePath2;
 	BasicBlock[] bb1,bb2;
 	GraphGenerator g;
+	SyncBlocksOps sbo;
 	//Queue waitQueue,notifyQueue;
 	
 
 	public InterThreadAnalysis(BasicBlock[] bb1, BasicBlock[] bb2,
 			GraphGenerator g) {
-		super();
-		
+				
 		this.bb1 = bb1;
 		this.bb2 = bb2;
 		this.g=g;
+		sbo=SyncBlocksOps.getInstance();
 	}
 
 
@@ -42,6 +43,11 @@ public class InterThreadAnalysis {
 			}
 			g.addInterEdge(fromNode+toNode, fromNode, toNode);
 		}
+	}
+	
+	
+	public void computerNewInterThreadAnalysis(){
+		
 	}
 	
 	String findNode(int instrNo,BasicBlock[] bb) {

@@ -1,11 +1,13 @@
 package in.msruas.project;
 
+import java.util.ArrayList;
+
 public class SyncBlocksOps {
 	private static SyncBlocksOps instance = null;
-	SyncBlock syncBlock;
+	ArrayList<SyncBlock> syncBlock;
 	
 	private SyncBlocksOps(){
-		syncBlock=new SyncBlock();
+		syncBlock=new ArrayList<>();
 	}
 	
 	public static SyncBlocksOps getInstance() {
@@ -15,12 +17,12 @@ public class SyncBlocksOps {
 	      return instance;
 	   }
 
-	public SyncBlock getSyncBlock() {
+	public ArrayList<SyncBlock> getSyncBlock() {
 		return syncBlock;
 	}
 
 	public void setSyncBlock(SyncBlock syncBlock) {
-		this.syncBlock = syncBlock;
+		this.syncBlock.add(syncBlock);
 	}
 
 	public static void setInstance(SyncBlocksOps instance) {
