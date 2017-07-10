@@ -6,10 +6,13 @@ import java.io.IOException;
 public class CFGgenerator {
 
 	public static void main(String[] args) throws IOException {
-		CFGconstructor cfg = new CFGconstructor("F:\\individual_project\\bytecodes\\producer.txt",1);
-		CFGconstructor cfg1 = new CFGconstructor("F:\\individual_project\\bytecodes\\consumer.txt",2);
+		CFGconstructor1 cfg = new CFGconstructor1("F:\\individual_project\\bytecodes\\producer.txt",1);
+		CFGconstructor1 cfg1 = new CFGconstructor1("F:\\individual_project\\bytecodes\\consumer.txt",2);
 //		CFGconstructor cfg = new CFGconstructor("F:\\individual_project\\bytecodes\\caseStudy1_thread1.txt",1);
 //		CFGconstructor cfg1 = new CFGconstructor("F:\\individual_project\\bytecodes\\caseStudy1_thread2.txt",2);
+//		CFGconstructor1 cfg = new CFGconstructor1("F:\\individual_project\\bytecodes\\SimpleWaitAndNotifyMain.txt",1);
+//		CFGconstructor1 cfg1 = new CFGconstructor1("F:\\individual_project\\bytecodes\\SimpleWaitAndNotifyThreadOne.txt",2);
+		
 		NPAnalyzer npa=NPAnalyzer.getInstance();
 		CodeStore cs=CodeStore.getInstance();
 		HappensBefore hb=HappensBefore.getInstance();
@@ -37,8 +40,12 @@ public class CFGgenerator {
 		
 		
 		//g.genInterThreadComm(cfg1.getWaitStack(), cfg1.getNotifyStack());
-		InterThreadAnalysis it=new InterThreadAnalysis(cfg.getBasicBlock(), cfg1.getBasicBlock(), g);
-		it.computerInterThreadEdges(cfg.getWaitStack(), cfg.getNotifyStack(), cfg1.getWaitStack(), cfg1.getNotifyStack());
+//		InterThreadAnalysis it=new InterThreadAnalysis(cfg.getBasicBlock(), cfg1.getBasicBlock(), g);
+//		it.computerInterThreadEdges(cfg.getWaitStack(), cfg.getNotifyStack(), cfg1.getWaitStack(), cfg1.getNotifyStack());
+//		
+		InterThreadAnalysis1 it=new InterThreadAnalysis1(g);
+		it.computerInterThreadEdges();
+		
 		g.renderGraph();
 //		cfg.printblock();
 //		cfg1.printblock();

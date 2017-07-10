@@ -32,6 +32,7 @@ public class CFGconstructor1 {
 	WaitAndNotify wn;
 	WaitAndNotifyOps wno;
 	BasicBlockOps bbo;
+	int syncBlockCount;
 	
 
 	int[][] edge;
@@ -53,7 +54,7 @@ public class CFGconstructor1 {
 		wn=new WaitAndNotify(fileName);
 		wno=WaitAndNotifyOps.getInstance();
 		bbo=BasicBlockOps.getInstance();
-		
+		syncBlockCount=0;
 
 	}
 
@@ -100,20 +101,21 @@ public class CFGconstructor1 {
 					waitQueue.add(currentAddr);
 					sb.setWaitList(Integer.parseInt(currentAddr));
 					leaders[numberofLeaders++] = Integer.parseInt(currentAddr);
-					leaderSwitch=true;
+					//leaderSwitch=true;
 					continue;
 				}
 				
 				if (token.contains("notify")) {
 					notifyQueue.add(currentAddr);
 					sb.setNotifyList(Integer.parseInt(currentAddr));
-					leaders[numberofLeaders++] = Integer.parseInt(currentAddr);
+					//leaders[numberofLeaders++] = Integer.parseInt(currentAddr);
 				}
 
 				if (token.equals("monitorenter")) {
 
 					StringTokenizer st1 = new StringTokenizer(currentLine);
 					String addr = st1.nextToken();
+					syncBlockCount++;
 
 					// monitorenter and monitorexit instruction are leaders
 					int presentAddress = Integer.parseInt(addr);
@@ -126,39 +128,44 @@ public class CFGconstructor1 {
 				if (token.equals("monitorexit")) {
 					leaderSwitch = true;
 					sb.setExitLine(Integer.parseInt(currentAddr));
+					syncBlockCount--;
+				}
+				
+				if(syncBlockCount==0){
+					if (token.equals("goto") || token.equals("goto_w") || token.equals("jsr") || token.equals("jsr_w")
+							|| token.equals("ret") || token.equals("tableswitch") || token.equals("lookupswitch")) {
+						StringTokenizer st2 = new StringTokenizer(currentLine);
+						String addr = st2.nextToken();
+						int presentAddress = Integer.parseInt(addr);
+						int targetAddress = Integer.parseInt(st.nextToken());
+						leaders[numberofLeaders++] = targetAddress;
+						System.out.println("leader: " + leaders[numberofLeaders - 1]);
+						leaderSwitch = true;
+
+						// construction of edge
+						edge[row][0] = presentAddress;
+						edge[row][1] = targetAddress;
+						row++;
+						gotoList.add(presentAddress);
+
+					}
+
+					if (token.charAt(0) == 'i' && token.charAt(1) == 'f') {
+						StringTokenizer st2 = new StringTokenizer(currentLine);
+						String addr = st2.nextToken();
+						int presentAddress = Integer.parseInt(addr);
+						int targetAddress = Integer.parseInt(st.nextToken());
+						leaders[numberofLeaders++] = presentAddress;
+						leaders[numberofLeaders++] = targetAddress;
+						leaderSwitch = true;
+						// construction of edge
+						edge[row][0] = presentAddress;
+						edge[row][1] = targetAddress;
+						row++;
+					}
 				}
 
-				if (token.equals("goto") || token.equals("goto_w") || token.equals("jsr") || token.equals("jsr_w")
-						|| token.equals("ret") || token.equals("tableswitch") || token.equals("lookupswitch")) {
-					StringTokenizer st2 = new StringTokenizer(currentLine);
-					String addr = st2.nextToken();
-					int presentAddress = Integer.parseInt(addr);
-					int targetAddress = Integer.parseInt(st.nextToken());
-					leaders[numberofLeaders++] = targetAddress;
-					System.out.println("leader: " + leaders[numberofLeaders - 1]);
-					leaderSwitch = true;
-
-					// construction of edge
-					edge[row][0] = presentAddress;
-					edge[row][1] = targetAddress;
-					row++;
-					gotoList.add(presentAddress);
-
-				}
-
-				if (token.charAt(0) == 'i' && token.charAt(1) == 'f') {
-					StringTokenizer st2 = new StringTokenizer(currentLine);
-					String addr = st2.nextToken();
-					int presentAddress = Integer.parseInt(addr);
-					int targetAddress = Integer.parseInt(st.nextToken());
-					leaders[numberofLeaders++] = presentAddress;
-					leaders[numberofLeaders++] = targetAddress;
-					leaderSwitch = true;
-					// construction of edge
-					edge[row][0] = presentAddress;
-					edge[row][1] = targetAddress;
-					row++;
-				}
+				
 
 				// Separating monitorenter and monitorexit instructions
 

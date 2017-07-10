@@ -26,6 +26,10 @@ public class Nodes {
 		return (BasicBlock[]) nodesMap.get(fileName);
 	}
 	
+	public HashMap getEntireNodesMap(){
+		return nodesMap;
+	}
+	
 	String findNode(int instrNo,String fileName) {
 		BasicBlock[] bb=(BasicBlock[]) nodesMap.get(fileName);
 		for (int i = 0; i < bb.length; i++) {

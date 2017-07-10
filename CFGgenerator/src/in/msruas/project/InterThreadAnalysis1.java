@@ -1,27 +1,46 @@
 package in.msruas.project;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Queue;
 
-public class InterThreadAnalysis {
-	
+public class InterThreadAnalysis1 {
 	String filePath1,filePath2;
 	BasicBlock[] bb1,bb2;
 	GraphGenerator g;
-	//SyncBlocksOps sbo;
-	//Queue waitQueue,notifyQueue;
-	
-
-	public InterThreadAnalysis(BasicBlock[] bb1, BasicBlock[] bb2,
-			GraphGenerator g) {
-				
-		this.bb1 = bb1;
-		this.bb2 = bb2;
+	WaitAndNotifyOps wno;
+	Queue waitQ1, notifyQ1, waitQ2, notifyQ2;
+	//BasicBlockOps bbo;
+	Nodes nodelist;
+	public InterThreadAnalysis1(GraphGenerator g) {
 		this.g=g;
-		//sbo=SyncBlocksOps.getInstance();
+		wno=WaitAndNotifyOps.getInstance();
+		//bbo=BasicBlockOps.getInstance();
+		nodelist=Nodes.getInstance();
+		initBasicBlocks();
+		initQueues();
 	}
-
-
-	public void computerInterThreadEdges(Queue waitQ1,Queue notifyQ1,Queue waitQ2,Queue notifyQ2){
+	
+	/*function to initialize the basic blocks*/
+	void initBasicBlocks(){
+		HashMap blockList=nodelist.getEntireNodesMap();
+		Iterator keyset = blockList.keySet().iterator();		
+		bb1=(BasicBlock[]) blockList.get(keyset.next());
+		bb2=(BasicBlock[]) blockList.get(keyset.next());
+		
+	}
+	
+	/*function to initialize the wait and notify queues*/
+	void initQueues(){
+		ArrayList<WaitAndNotify> wnList = wno.getWnList();
+		waitQ1=wnList.get(1).getWaitQueue();
+		notifyQ1=wnList.get(1).getNotifyQueue();
+		waitQ2=wnList.get(0).getWaitQueue();
+		notifyQ2=wnList.get(0).getNotifyQueue();		
+	}
+	
+public void computerInterThreadEdges(){
 		
 		for(Object item : notifyQ1){
 			int from = Integer.parseInt((String) notifyQ1.remove()) , to = Integer.parseInt((String) waitQ2.remove());
@@ -92,5 +111,6 @@ public class InterThreadAnalysis {
 		}
 		return null;
 	}
+	
 	
 }
