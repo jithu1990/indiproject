@@ -6,8 +6,8 @@ import java.io.IOException;
 public class CFGgenerator {
 
 	public static void main(String[] args) throws IOException {
-		CFGconstructor1 cfg = new CFGconstructor1("F:\\individual_project\\bytecodes\\producer.txt",1);
-		CFGconstructor1 cfg1 = new CFGconstructor1("F:\\individual_project\\bytecodes\\consumer.txt",2);
+		CFGconstructor1 cfg = new CFGconstructor1("F:\\individual_project\\bytecodes\\producer_parallel_null.txt",1);
+		CFGconstructor1 cfg1 = new CFGconstructor1("F:\\individual_project\\bytecodes\\consumer_parallel_null.txt",2);
 //		CFGconstructor cfg = new CFGconstructor("F:\\individual_project\\bytecodes\\caseStudy1_thread1.txt",1);
 //		CFGconstructor cfg1 = new CFGconstructor("F:\\individual_project\\bytecodes\\caseStudy1_thread2.txt",2);
 //		CFGconstructor1 cfg = new CFGconstructor1("F:\\individual_project\\bytecodes\\SimpleWaitAndNotifyMain.txt",1);
@@ -50,6 +50,8 @@ public class CFGgenerator {
 //		cfg.printblock();
 //		cfg1.printblock();
 		g.findHappensBefore();
+		g.findParallelBlocks("F:\\individual_project\\bytecodes\\producer_parallel_null.txt", "F:\\individual_project\\bytecodes\\consumer_parallel_null.txt");
+		
 		// GraphGenerator g=new GraphGenerator();
 		// g.generateGraph();
 		//

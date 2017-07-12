@@ -22,6 +22,7 @@ public class NPAnalyzer {
 	 CodeStore cs=CodeStore.getInstance();
 	 HappensBefore hb=HappensBefore.getInstance();
 	 Nodes nodes=Nodes.getInstance();
+	 ParallelBlocks pb=ParallelBlocks.getInstance();
 
 	private NPAnalyzer() {
 		
@@ -118,15 +119,38 @@ public class NPAnalyzer {
 			
 		     source=sourceCell.getColumnKey();
 		    for (Cell<String, Integer, String> sinkCell: drefTable.cellSet()){
-		    	
-			     sink=sinkCell.getColumnKey();
-			    sourceBlock=nodes.findNode(source,sourceCell.getRowKey());
-			    sinkBlock=nodes.findNode(sink,sinkCell.getRowKey());
-			    if(hb.checkHB(sourceBlock, sinkBlock)){
-			    	System.out.println("possible null pointer flow:");
-			    	System.out.println("source: "+sourceCell.getRowKey()+" "+sourceCell.getColumnKey()+" "+sourceCell.getValue());
-			    	System.out.println("sink: "+sinkCell.getRowKey()+" "+sinkCell.getColumnKey()+" "+sinkCell.getValue());
-			    	System.out.println("--------------------");
+		    	if(sourceCell.getValue()==sinkCell.getValue()){
+		    		sink=sinkCell.getColumnKey();
+				    sourceBlock=nodes.findNode(source,sourceCell.getRowKey());
+				    sinkBlock=nodes.findNode(sink,sinkCell.getRowKey());
+				    
+				    if(hb.checkHB(sourceBlock, sinkBlock)){
+				    	System.out.println("possible null pointer flow:");
+				    	System.out.println("source: "+sourceCell.getRowKey()+" "+sourceCell.getColumnKey()+" "+sourceCell.getValue());
+				    	System.out.println("sink: "+sinkCell.getRowKey()+" "+sinkCell.getColumnKey()+" "+sinkCell.getValue());
+				    	System.out.println("--------------------");
+		    	}
+			    
+			    }
+			}
+		}
+		
+		System.out.println("starting parallel analysis: ");
+		for (Cell<String, Integer, String> sourceCell: nullTable.cellSet()){
+			
+		     source=sourceCell.getColumnKey();
+		    for (Cell<String, Integer, String> sinkCell: drefTable.cellSet()){
+		    	if(sourceCell.getValue()==sinkCell.getValue()){
+		    		 sink=sinkCell.getColumnKey();
+					    sourceBlock=nodes.findNode(source,sourceCell.getRowKey());
+					    sinkBlock=nodes.findNode(sink,sinkCell.getRowKey());
+					    if(pb.checkPB(sourceBlock, sinkBlock)){
+					    	System.out.println("possible null pointer flow:");
+					    	System.out.println("source: "+sourceCell.getRowKey()+" "+sourceCell.getColumnKey()+" "+sourceCell.getValue());
+					    	System.out.println("sink: "+sinkCell.getRowKey()+" "+sinkCell.getColumnKey()+" "+sinkCell.getValue());
+					    	System.out.println("--------------------");
+		    	}
+			    
 			    }
 			}
 		}

@@ -43,12 +43,16 @@ public class GraphGenerator {
 	HappensBefore hb;
 	SyncBlocksOps sbo;
 	BasicBlockOps bbo;
+	ParallelBlocks pb;
+	Nodes nodes;
 
 	public GraphGenerator() {
 		g = new DirectedSparseGraph<String, String>();
 		hb=HappensBefore.getInstance();
 		sbo=SyncBlocksOps.getInstance();
 		bbo=BasicBlockOps.getInstance();
+		pb=ParallelBlocks.getInstance();
+		nodes=Nodes.getInstance();
 	}
 
 	public void generateGraph(BasicBlock[] b, int[][] edges, ArrayList<Integer> gotoList) {
@@ -93,7 +97,7 @@ public class GraphGenerator {
 
 		// Let's see what we have. Note the nice output from the
 		// SparseMultigraph<V,E> toString() method
-		System.out.println("The graph g = " + g.toString());
+		//System.out.println("The graph g = " + g.toString());
 		// Note that we can use the same nodes and edges in two different
 		// graphs.
 
@@ -118,7 +122,7 @@ public class GraphGenerator {
 		//color of vertex
 		Transformer<String,Paint> vertexPaint = new Transformer<String,Paint>() {
 	        public Paint transform(String i) {
-	        	System.out.println("i is "+i);
+	        	//System.out.println("i is "+i);
 	        	if(isSyncBlock(i))
 	        		return Color.GREEN;
 	        	else
@@ -132,7 +136,7 @@ public class GraphGenerator {
 		frame.getContentPane().add(vv);
 		frame.pack();
 		frame.setVisible(true);
-		System.out.println("edgelist is:" + g.getEdges());
+		//System.out.println("edgelist is:" + g.getEdges());
 		
 		viz.setBackground(Color.WHITE);
 		viz.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<String>());
@@ -173,7 +177,7 @@ public class GraphGenerator {
 		}
 		g.addEdge("inter" + findNode(from)+findNode(to), fromNode, toNode);
 		}
-		System.out.println("edgelist is:" + g.getEdges());
+		//System.out.println("edgelist is:" + g.getEdges());
 	}
 	
 	
@@ -248,6 +252,7 @@ public class GraphGenerator {
 		}
 	}
 	
+	
 	public boolean isSyncBlock(String i){
 		ArrayList<SyncBlock> ar=sbo.getSyncBlock();
 		BasicBlock b;
@@ -266,7 +271,7 @@ public class GraphGenerator {
 				exitStack=(Stack) exitStack.clone();	//should clone or reference of stack is passed.
 				while(!enterQ.isEmpty()){
 					if(((Integer) enterQ.remove())<=b.getLeader()&&b.getLeader()<=((Integer) exitStack.pop())){
-						System.out.println("block " + b.getBlockName() + "is synchornized block");
+						
 						return true;
 					}
 				}
@@ -276,5 +281,29 @@ public class GraphGenerator {
 		}
 		return false;
 		
+	}
+	
+	void findParallelBlocks(String fileName1,String fileName2){
+		BasicBlock[] bb1 = nodes.getNodesMap(fileName1);
+		BasicBlock[] bb2=nodes.getNodesMap(fileName2);
+		for (BasicBlock b1 : bb1) {
+			for(BasicBlock b2:bb2 ){
+				if(isSyncBlock(b1.getBlockName())&&isSyncBlock(b2.getBlockName())){
+					continue;
+				}
+				pb.addPB(b1.getBlockName(), b2.getBlockName());
+			}
+
+			}
+		for (BasicBlock b2 : bb2) {
+			for(BasicBlock b1:bb1 ){
+				if(isSyncBlock(b1.getBlockName())&&isSyncBlock(b2.getBlockName())){
+					continue;
+				}
+				pb.addPB(b2.getBlockName(), b1.getBlockName());
+			}
+
+			}
+	pb.printHB();
 	}
 }

@@ -297,10 +297,7 @@ wno.setWnList(wn);
 		basicBlock[numberofLeaders].setPrevBlock("b" +blockid+ i);
 		basicBlock[numberofLeaders].setNextBlock("null");
 		basicBlock[numberofLeaders].setLeader(0);
-		nodes.setNodesMap(this.fileName, basicBlock);
-		
-
-		
+		nodes.setNodesMap(this.fileName, basicBlock);	
 
 	}
 

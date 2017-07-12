@@ -1,10 +1,11 @@
 package in.msruas.project;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.google.common.collect.*;
 public class CodeStore { 
 	private static CodeStore instance = null;
-	Table<String,Integer, String> codeTable = HashBasedTable.create();
+	Table<String,Integer, String> codeTable = Tables.newCustomTable(new LinkedHashMap<>(), LinkedHashMap::new);
 	
 	
 	
@@ -32,7 +33,8 @@ public class CodeStore {
 	}
 	
 	public void printCode(){
-		 Map<Integer,String> code =  codeTable.row("F:\\individual_project\\bytecodes\\consumer.txt");
+		System.out.println("printing code");
+		 Map<Integer,String> code =  codeTable.row("F:\\individual_project\\bytecodes\\producer_parallel_null.txt");
 		for(Map.Entry<Integer, String> entry : code.entrySet()){
 	         System.out.println("code key: " + entry.getKey() + ", value : " + entry.getValue());
 	      }
