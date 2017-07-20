@@ -1,4 +1,4 @@
-package in.msruas.project;
+package in.msruas.project.analysis;
 
 import java.util.ArrayList;
 import java.util.List;

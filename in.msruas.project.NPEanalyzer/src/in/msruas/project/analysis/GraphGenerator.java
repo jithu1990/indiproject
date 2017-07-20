@@ -1,4 +1,4 @@
-package in.msruas.project;
+package in.msruas.project.analysis;
 
 import java.awt.Color;
 import java.awt.Dimension;

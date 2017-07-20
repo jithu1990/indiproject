@@ -1,11 +1,14 @@
-package in.msruas.project;
+package in.msruas.project.analysis;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class CFGgenerator {
 
-	public static void main(String[] args) throws IOException {
+	public void main(String path, ArrayList<String> funcName) throws IOException {
+		int count=1;
+		
 //		CFGconstructor1 cfg = new CFGconstructor1("F:\\individual_project\\bytecodes\\days_assign_At_Notify.txt",1);
 //		CFGconstructor1 cfg1 = new CFGconstructor1("F:\\individual_project\\bytecodes\\days_print_At_Notify.txt",2);
 		CFGconstructor1 cfg = new CFGconstructor1("F:\\individual_project\\bytecodes\\days_assign_1.txt",1);
@@ -16,6 +19,8 @@ public class CFGgenerator {
 //		CFGconstructor cfg1 = new CFGconstructor("F:\\individual_project\\bytecodes\\caseStudy1_thread2.txt",2);
 //		CFGconstructor1 cfg = new CFGconstructor1("F:\\individual_project\\bytecodes\\SimpleWaitAndNotifyMain.txt",1);
 //		CFGconstructor1 cfg1 = new CFGconstructor1("F:\\individual_project\\bytecodes\\SimpleWaitAndNotifyThreadOne.txt",2);
+		
+		
 		
 		NPAnalyzer npa=NPAnalyzer.getInstance();
 		CodeStore cs=CodeStore.getInstance();
