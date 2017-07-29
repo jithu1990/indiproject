@@ -23,6 +23,8 @@ public class NPAnalyzer {
 	 HappensBefore hb=HappensBefore.getInstance();
 	 Nodes nodes=Nodes.getInstance();
 	 ParallelBlocks pb=ParallelBlocks.getInstance();
+	 LineStore ls=LineStore.getInstance();
+	 SwtList vh=new SwtList();
 
 	private NPAnalyzer() {
 		
@@ -129,6 +131,11 @@ public class NPAnalyzer {
 				    	System.out.println("source: "+sourceCell.getRowKey()+" "+sourceCell.getColumnKey()+" "+sourceCell.getValue());
 				    	System.out.println("sink: "+sinkCell.getRowKey()+" "+sinkCell.getColumnKey()+" "+sinkCell.getValue());
 				    	System.out.println("--------------------");
+				    	int src=ls.FindLineNo(sourceCell.getColumnKey(), sourceCell.getRowKey());
+				    	int snk=ls.FindLineNo(sinkCell.getColumnKey(), sinkCell.getRowKey());
+				    	
+				    	vh.addElement(sourceCell.getRowKey(),src,sinkCell.getRowKey(),snk);
+				    	
 		    	}
 			    
 			    }
@@ -149,6 +156,10 @@ public class NPAnalyzer {
 					    	System.out.println("source: "+sourceCell.getRowKey()+" "+sourceCell.getColumnKey()+" "+sourceCell.getValue());
 					    	System.out.println("sink: "+sinkCell.getRowKey()+" "+sinkCell.getColumnKey()+" "+sinkCell.getValue());
 					    	System.out.println("--------------------");
+					    	int src=ls.FindLineNo(sourceCell.getColumnKey(), sourceCell.getRowKey());
+					    	int snk=ls.FindLineNo(sinkCell.getColumnKey(), sinkCell.getRowKey());
+					    	
+					    	vh.addElement(sourceCell.getRowKey(),src,sinkCell.getRowKey(),snk);
 		    	}
 			    
 			    }

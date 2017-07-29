@@ -27,6 +27,15 @@
             commandId="in.msruas.project.NPEanalyzer.findNPE">
       </handler>
    </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            class="in.msruas.project.analysis.ViewHandler"
+            id="in.msruas.project.NPEanalyzer.outputView"
+            name="NPE results"
+            restorable="true">
+      </view>
+   </extension>
 
 
 </plugin>

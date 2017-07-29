@@ -18,30 +18,32 @@ public class InterThreadAnalysis1 {
 		wno=WaitAndNotifyOps.getInstance();
 		//bbo=BasicBlockOps.getInstance();
 		nodelist=Nodes.getInstance();
-		initBasicBlocks();
-		initQueues();
+		initBasicBlocks();	//not required when method changed to generalized. delete later
+		initQueues();	//not required when method changed to generalized. delete later
 	}
 	
 	/*function to initialize the basic blocks*/
 	void initBasicBlocks(){
 		HashMap blockList=nodelist.getEntireNodesMap();
-		Iterator keyset = blockList.keySet().iterator();		
-		bb1=(BasicBlock[]) blockList.get(keyset.next());
-		bb2=(BasicBlock[]) blockList.get(keyset.next());
+//		Iterator keyset = blockList.keySet().iterator();		
+//		bb1=(BasicBlock[]) blockList.get(keyset.next());
+//		bb2=(BasicBlock[]) blockList.get(keyset.next());
 		
 	}
 	
 	/*function to initialize the wait and notify queues*/
 	void initQueues(){
 		ArrayList<WaitAndNotify> wnList = wno.getWnList();
-		waitQ1=wnList.get(1).getWaitQueue();
-		notifyQ1=wnList.get(1).getNotifyQueue();
-		waitQ2=wnList.get(0).getWaitQueue();
-		notifyQ2=wnList.get(0).getNotifyQueue();		
+//		waitQ1=wnList.get(1).getWaitQueue();
+//		notifyQ1=wnList.get(1).getNotifyQueue();
+//		waitQ2=wnList.get(0).getWaitQueue();
+//		notifyQ2=wnList.get(0).getNotifyQueue();		
 	}
 	
-public void computerInterThreadEdges(){
-		
+public void computerInterThreadEdges(BasicBlock[] basicBlocks, BasicBlock[] basicBlocks2,Queue waitQ1,Queue notifyQ1,Queue waitQ2,Queue notifyQ2){
+	
+	bb1=basicBlocks;
+	bb2=basicBlocks2;
 		for(Object item : notifyQ1){
 			int from = Integer.parseInt((String) notifyQ1.peek()) , to = Integer.parseInt((String) waitQ2.peek());
 			String fromNode = findNode(from,bb1);

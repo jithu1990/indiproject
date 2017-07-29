@@ -125,7 +125,9 @@ public class JlistConstructor extends JFrame implements ActionListener {
 	               
 	               try {
 					extractByte.getMethodByteCodes();
-				} catch (IOException e1) {
+					extractByte.runLineNumberTableCmd();
+					extractByte.extractLineNumberTable();;
+				} catch (IOException | InterruptedException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}

@@ -62,7 +62,9 @@ public class GraphGenerator {
 
 		// Add some vertices. From above we defined these to be type Integer.
 		for (int i = 0; i < bb.length; i++) {
+			if(bb[i].getBlockName()!="stop"){
 			g.addVertex(bb[i].getBlockName());
+			}
 
 		}
 
@@ -107,6 +109,7 @@ public class GraphGenerator {
 
 	public void renderGraph() {
 		Layout<String, String> layout = new FRLayout<String, String>(g);
+		System.out.println("vertices are:" + g.getVertices().toString());
 		layout.setSize(new Dimension(600,600)); // sets the initial size of the
 													// space
 		// The BasicVisualizationServer<V,E> is parameterized by the edge types
@@ -156,7 +159,8 @@ public class GraphGenerator {
 		try {
 		    ImageIO.write(image, "png", outputfile);
 		} catch (IOException e) {
-		    // Exception handling
+		    System.out.println("exception creating image");
+		    e.printStackTrace();
 		}
 	}
 
@@ -306,5 +310,47 @@ public class GraphGenerator {
 
 			}
 	pb.printHB();
+	}
+	
+	
+	/*this method does not consider happens before to find parallel
+	 * because it is much easier to check if both are synchronized than to check
+	 * if they both are paralle. Maybe in real program we will have to check 
+	 * if they are happens before because for now we dont consider if they 
+	 * use same locks.
+	 */
+	void findPBWithHB(CFGconstructor1[] cfgObj,String[] filePath){
+		
+		
+		for (int i = 0; i < cfgObj.length-1; i++){
+			BasicBlock[] bb1 = nodes.getNodesMap(filePath[i]);
+			for(int j=i;j<cfgObj.length;j++){
+				BasicBlock[] bb2=nodes.getNodesMap(filePath[i+1]);
+				for (BasicBlock b1 : bb1) {
+					for(BasicBlock b2:bb2 ){
+						if(isSyncBlock(b1.getBlockName())&&isSyncBlock(b2.getBlockName())){
+							continue;
+						}
+						pb.addPB(b1.getBlockName(), b2.getBlockName());
+					}
+
+					}
+				for (BasicBlock b2 : bb2) {
+					for(BasicBlock b1:bb1 ){
+						if(isSyncBlock(b1.getBlockName())&&isSyncBlock(b2.getBlockName())){
+							continue;
+						}
+						pb.addPB(b2.getBlockName(), b1.getBlockName());
+					}
+
+					}
+			
+			}
+			
+			
+		}
+		pb.printHB();
+		
+		
 	}
 }

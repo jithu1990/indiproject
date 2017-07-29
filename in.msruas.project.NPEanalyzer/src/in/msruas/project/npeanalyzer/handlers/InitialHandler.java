@@ -45,6 +45,8 @@ public class InitialHandler extends AbstractHandler {
                 e.printStackTrace();
             }
         }
+        JlistConstructor jlist=new JlistConstructor(methodNames);
+        jlist.runList(methodNames,event); 
         return null;
     }
 
@@ -78,10 +80,10 @@ public class InitialHandler extends AbstractHandler {
                 
                 
             }
-            JlistConstructor jlist=new JlistConstructor(methodNames);
-            jlist.runList(methodNames,event);            
+                       
 
         }
+
     }
 
     /**

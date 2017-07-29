@@ -1,13 +1,7 @@
 package in.msruas.project;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
@@ -18,6 +12,7 @@ public class NPAnalyzer {
 	
 	Table<String,Integer, String> nullTable = HashBasedTable.create();
 	Table<String,Integer, String> drefTable = HashBasedTable.create();
+	 
 	
 	 CodeStore cs=CodeStore.getInstance();
 	 HappensBefore hb=HappensBefore.getInstance();
