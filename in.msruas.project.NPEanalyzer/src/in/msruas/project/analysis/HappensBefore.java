@@ -9,6 +9,7 @@ import com.google.common.collect.ListMultimap;
 public class HappensBefore {
 	private static HappensBefore instance = null;
 	ListMultimap<String, String> hbMap = ArrayListMultimap.create();
+	ArrayList<String> visited=new ArrayList<>();;
 	
 	
 	
@@ -27,33 +28,41 @@ public void addHB(String key,String value){
 	hbMap.put(key, value);
 }
 
-public boolean checkHB(String before,String after){
-	ArrayList<String> visited=new ArrayList<>();
-		
-		if(visited.contains(before)){
-			return false;
-		}
-		else{
-			visited.add(before);
-		}
-		List<String> value= hbMap.get(before);
-	     if(value.contains(after)){
-	    	 return true;
-	     }
-	     else {
-	    	 for (String val : value) {
-	       		 
-	    		 if(checkHB(val, after)){
-	    			 return true;
-	    		 }
-	       			 
-	       		 }
-	    	 
-	     }
-	   
-
-	return false;
+public ListMultimap<String, String> getHBMap(){
+	return hbMap;
 }
+
+/*this function is removed and added in 
+ * checkHappensBefore.java
+ */
+
+//public boolean checkHB(String before,String after){
+//	 
+//		
+//		if(visited.contains(before)){
+//			return false;
+//		}
+//		else{
+//			visited.add(before);
+//		}
+//		List<String> value= hbMap.get(before);
+//	     if(value.contains(after)){
+//	    	 return true;
+//	     }
+//	     else {
+//	    	 for (String val : value) {
+//	       		 
+//	    		 if(checkHB(val, after)){
+//	    			 return true;
+//	    		 }
+//	       			 
+//	       		 }
+//	    	 
+//	     }
+//	   
+//
+//	return false;
+//}
 
 public boolean checkKeyEquals(String before,String after){
 	List<String> value= hbMap.get(before);

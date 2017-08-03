@@ -135,7 +135,8 @@ public class GraphGenerator {
 	    };
 
 		JFrame frame = new JFrame("Simple Graph View");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().add(vv);
 		frame.pack();
 		frame.setVisible(true);
@@ -309,7 +310,7 @@ public class GraphGenerator {
 			}
 
 			}
-	pb.printHB();
+	pb.printPB();
 	}
 	
 	
@@ -349,7 +350,7 @@ public class GraphGenerator {
 			
 			
 		}
-		pb.printHB();
+		pb.printPB();
 		
 		
 	}

@@ -45,6 +45,9 @@ public void computerInterThreadEdges(BasicBlock[] basicBlocks, BasicBlock[] basi
 	bb1=basicBlocks;
 	bb2=basicBlocks2;
 		for(Object item : notifyQ1){
+			if(notifyQ1.isEmpty()||waitQ2.isEmpty()){
+				continue;
+			}
 			int from = Integer.parseInt((String) notifyQ1.peek()) , to = Integer.parseInt((String) waitQ2.peek());
 			String fromNode = findNode(from,bb1);
 			String toNode = findNode(to,bb2);
@@ -67,6 +70,9 @@ public void computerInterThreadEdges(BasicBlock[] basicBlocks, BasicBlock[] basi
 		
 		
 		for(Object item : notifyQ2){
+			if(notifyQ2.isEmpty()||waitQ1.isEmpty()){
+				continue;
+			}
 			int from = Integer.parseInt((String) notifyQ2.peek()) , to = Integer.parseInt((String) waitQ1.peek());
 			String fromNode = findNode(from,bb2);
 			String toNode = findNode(to,bb1);
@@ -88,6 +94,9 @@ public void computerInterThreadEdges(BasicBlock[] basicBlocks, BasicBlock[] basi
 		}
 		
 		for(Object item : notifyQ1){
+			if(notifyQ1.isEmpty()||waitQ2.isEmpty()){
+				continue;
+			}
 			int from = Integer.parseInt((String) notifyQ1.peek()) , to = Integer.parseInt((String) waitQ2.peek());
 			String fromNode = findNode(from,bb2);
 			String toNode = findNode(to,bb1);
@@ -108,6 +117,9 @@ public void computerInterThreadEdges(BasicBlock[] basicBlocks, BasicBlock[] basi
 			}
 		}
 		for(Object item : notifyQ2){
+			if(notifyQ2.isEmpty()||waitQ1.isEmpty()){
+				continue;
+			}
 			int from = Integer.parseInt((String) notifyQ2.peek()) , to = Integer.parseInt((String) waitQ1.peek());
 			String fromNode = findNode(from,bb1);
 			String toNode = findNode(to,bb2);

@@ -74,6 +74,7 @@ public class JlistConstructor extends JFrame implements ActionListener {
 	    	
 	    	DefaultListModel<String> listModel = new DefaultListModel<>();
             setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            setSize(600,600);
             for(String item: listItems){
             	 listModel.addElement(item);
             }

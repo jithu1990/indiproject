@@ -47,15 +47,24 @@ public class SwtList extends JFrame {
 	        
 	        add(sp);
 	         
-	        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	        this.setTitle("JList Example");       
 	        this.setSize(200,200);
 	        this.setLocationRelativeTo(null);
 	        this.setVisible(true);
 	    }
 	    
-	    void addElement(String sourceFile,int src,String sinkFile, int snk){
-	    	dtm.addRow(new Object[] { sourceFile,src, sinkFile,snk });
+	    void clearList(){
+	    	if (dtm.getRowCount() > 0) {
+	    	    for (int i = dtm.getRowCount() - 1; i > -1; i--) {
+	    	        dtm.removeRow(i);
+	    	    }
+	    	}
+	    	
+	    }
+	    
+	    void addElement(String sourceFile,int src,int snk){
+	    	dtm.addRow(new Object[] { sourceFile,src,snk });
 	    }
 	     
 	   

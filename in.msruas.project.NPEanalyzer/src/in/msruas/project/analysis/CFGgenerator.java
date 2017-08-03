@@ -90,6 +90,7 @@ public class CFGgenerator {
 	
 		npa.analyzeNull();
 		npa.analyzeDeref();
+		npa.analyzeIntermetiateWrites();
 		npa.printNull();
 		
 		hb.printHB();
