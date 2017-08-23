@@ -1,6 +1,7 @@
 package in.msruas.project.analysis;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Paint;
 import java.awt.geom.Point2D;
@@ -45,6 +46,7 @@ public class GraphGenerator {
 	BasicBlockOps bbo;
 	ParallelBlocks pb;
 	Nodes nodes;
+	ArrayList<String> visiteddfs;
 
 	public GraphGenerator() {
 		g = new DirectedSparseGraph<String, String>();
@@ -55,21 +57,17 @@ public class GraphGenerator {
 		nodes=Nodes.getInstance();
 	}
 
-	public void generateGraph(BasicBlock[] b, int[][] edges, ArrayList<Integer> gotoList) {
+	public void generateLattice(BasicBlock[] b, int[][] edges, ArrayList<Integer> gotoList) {
 		bb = b;
 		this.edges = edges;
 		this.gotoList = gotoList;
-
-		// Add some vertices. From above we defined these to be type Integer.
+		// Construct lattice vertices which are basic blocks
 		for (int i = 0; i < bb.length; i++) {
-			if(bb[i].getBlockName()!="stop"){
-			g.addVertex(bb[i].getBlockName());
+			if (bb[i].getBlockName() != "stop") {
+				g.addVertex(bb[i].getBlockName());
 			}
-
 		}
-
-		// Add some edges. From above we defined these to be of type String
-		// Note that the default is for undirected edges.
+		// Construct lattice edges which denotes happens before relationship
 		for (int i = 0; i < bb.length; i++) {
 			if (i == bb.length - 1) {
 				break;
@@ -78,90 +76,72 @@ public class GraphGenerator {
 				g.addEdge("edge" + bb[i].getBlockName() + bb[i + 1].getBlockName(), bb[i].getBlockName(),
 						bb[i + 1].getBlockName());
 			}
-
 		}
-
+		// Construct edges for control flow jumps using goto
 		for (int i = 0; i < edges.length; i++) {
 			gotoEdgeLabel++;
-			int from = edges[i][0], to = edges[i][1];
-
-//			if (findNode(from) == null || findNode(to) == null || edges[i][0] == 0 || edges[i][1] == 0) {
-//				continue;
-//			}
+			int from = edges[i][0], to = edges[i][1];			
 			if (findNode(from) == null || findNode(to) == null) {
 				continue;
 			}
 			if (edges[i][0] == 0 && edges[i][1] == 0) {
 				continue;
 			}
-			g.addEdge("goto" + findNode(from)+findNode(to), findNode(from), findNode(to));
+			g.addEdge("goto" + findNode(from) + findNode(to), findNode(from), findNode(to));
 		}
-
-		// Let's see what we have. Note the nice output from the
-		// SparseMultigraph<V,E> toString() method
-		//System.out.println("The graph g = " + g.toString());
-		// Note that we can use the same nodes and edges in two different
-		// graphs.
-
-		// findHappensBefore();
-
 	}
 
-	public void renderGraph() {
+	public void renderLattice() {
 		Layout<String, String> layout = new FRLayout<String, String>(g);
 		System.out.println("vertices are:" + g.getVertices().toString());
-		layout.setSize(new Dimension(600,600)); // sets the initial size of the
-													// space
+		layout.setSize(new Dimension(600, 600)); // sets the initial size of the space
 		// The BasicVisualizationServer<V,E> is parameterized by the edge types
 		BasicVisualizationServer<String, String> vv = new BasicVisualizationServer<String, String>(layout);
-		VisualizationImageServer<String, String> viz = new VisualizationImageServer<String,String>(vv.getGraphLayout(),
-		        vv.getGraphLayout().getSize());
-		
+		VisualizationImageServer<String, String> viz = new VisualizationImageServer<String, String>(vv.getGraphLayout(),
+				vv.getGraphLayout().getSize());
+
 		vv.setPreferredSize(new Dimension(400, 400)); // Sets the viewing area
 														// size
 
 		vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
-		
-		//color of vertex
-		Transformer<String,Paint> vertexPaint = new Transformer<String,Paint>() {
-	        public Paint transform(String i) {
-	        	//System.out.println("i is "+i);
-	        	if(isSyncBlock(i))
-	        		return Color.GREEN;
-	        	else
-	        	  	return Color.RED;
-	        }
-	        
-	    };
 
-		JFrame frame = new JFrame("Simple Graph View");
-		
+		// color of vertex
+		Transformer<String, Paint> vertexPaint = new Transformer<String, Paint>() {
+			public Paint transform(String i) {				
+				if (isSyncBlock(i))
+					return Color.GREEN;
+				else
+					return Color.RED;
+			}
+
+		};
+
+		JFrame frame = new JFrame("Lattice view");	//generate the jframe 
+
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().add(vv);
 		frame.pack();
-		frame.setVisible(true);
-		//System.out.println("edgelist is:" + g.getEdges());
-		
+		frame.setVisible(true);		
 		viz.setBackground(Color.WHITE);
 		viz.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<String>());
 		viz.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<String, String>());
 		viz.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<String>());
-		viz.getRenderer().getVertexLabelRenderer()
-		    .setPosition(Renderer.VertexLabel.Position.CNTR);
+		viz.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
 		vv.getRenderContext().setVertexFillPaintTransformer(vertexPaint);
-		
-		BufferedImage image = (BufferedImage) viz.getImage(
-			    new Point2D.Double(vv.getGraphLayout().getSize().getWidth() / 2,
-			    vv.getGraphLayout().getSize().getHeight() / 2),
-			    new Dimension(vv.getGraphLayout().getSize()));
-		
-		File outputfile = new File("graph.png");
+
+		BufferedImage image = (BufferedImage) viz	//get the image buffer from the lattice
+				.getImage(
+						new Point2D.Double(vv.getGraphLayout().getSize().getWidth() / 2,
+								vv.getGraphLayout().getSize().getHeight() / 2),
+						new Dimension(vv.getGraphLayout().getSize()));
+
+		File outputfile = new File("graph.png"); //save the image
 
 		try {
-		    ImageIO.write(image, "png", outputfile);
+			ImageIO.write(image, "png", outputfile);	//write image to output file
 		} catch (IOException e) {
-		    System.out.println("exception creating image");
-		    e.printStackTrace();
+			System.out.println("exception creating image");
+			e.printStackTrace();
 		}
 	}
 
@@ -354,4 +334,6 @@ public class GraphGenerator {
 		
 		
 	}
+	
+	
 }

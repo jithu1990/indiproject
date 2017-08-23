@@ -26,7 +26,7 @@ public class CFGgenerator {
 		      cfgObj[i].computeCFGInfo();
 		      cfgObj[i].sortLeaders();
 		      cfgObj[i].basicBlockGenerator();
-		      g.generateGraph(cfgObj[i].getBasicBlock(), cfgObj[i].getEdge(), cfgObj[i].getGotoList());
+		      g.generateLattice(cfgObj[i].getBasicBlock(), cfgObj[i].getEdge(), cfgObj[i].getGotoList());
 		      cfgObj[i].printblock();
 		      if(i==cfgObj.length-1){
 		    	  continue;
@@ -80,7 +80,8 @@ public class CFGgenerator {
 		
 		
 		
-		g.renderGraph();
+		g.renderLattice();
+	
 
 		g.findHappensBefore();
 

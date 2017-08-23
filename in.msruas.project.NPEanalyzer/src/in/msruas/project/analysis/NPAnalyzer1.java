@@ -15,14 +15,13 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Table;
 import com.google.common.collect.Table.Cell;
 
-public class NPAnalyzer {
-	private static NPAnalyzer instance = null;
+public class NPAnalyzer1 {
+	private static NPAnalyzer1 instance = null;
 	
 	Table<String,Integer, String> nullTable = HashBasedTable.create();
 	Table<String,Integer, String> drefTable = HashBasedTable.create();
 	Table<String,Integer,String> intermediateWriteTable=HashBasedTable.create();
 	ListMultimap<String, Integer> intermediateWriteMap = ArrayListMultimap.create();
-	GraphGenerator g;
 	
 	
 	 CodeStore cs=CodeStore.getInstance();
@@ -33,13 +32,13 @@ public class NPAnalyzer {
 	 LineStore ls=LineStore.getInstance();
 	 
 
-	private NPAnalyzer() {
+	private NPAnalyzer1() {
 		
 	}
 	
-	public static NPAnalyzer getInstance() {
+	public static NPAnalyzer1 getInstance() {
 	      if(instance == null) {
-	         instance = new NPAnalyzer();
+	         instance = new NPAnalyzer1();
 	      }
 	      return instance;
 	   }
@@ -166,7 +165,7 @@ public class NPAnalyzer {
 			
 			
 				String str = cell.getValue();
-				if(str.contains("getfield")||str.contains("getstatic")){
+				
 					for (Cell<String, Integer, String> cell1 : nullTable.cellSet()){
 					    if(str.contains("#"+cell1.getValue())){		//# is appended because or else it will match with line number too eg: 11 getfield #22, it might match with 11 instead of 22
 					    	this.storeDref(cell.getRowKey(), cell.getColumnKey(), cell1.getValue());
@@ -174,7 +173,7 @@ public class NPAnalyzer {
 					    }
 					}							
 				
-			}
+			
 			
 			
 			}
@@ -196,33 +195,10 @@ public class NPAnalyzer {
 			
 		     source=sourceCell.getColumnKey();
 		    for (Cell<String, Integer, String> sinkCell: drefTable.cellSet()){
-		    	if(sourceCell.getValue()==sinkCell.getValue()){
-		    		System.out.println("sourceCell Value is: "+sourceCell.getValue());
-		    		sink=sinkCell.getColumnKey();
-		    		sourceBlock=nodes.findNode(source,sourceCell.getRowKey());
-				    sinkBlock=nodes.findNode(sink,sinkCell.getRowKey());
-				    checkHappensBefore hb=new checkHappensBefore();
-				    if(hb.checkHB(sourceBlock, sinkBlock)){
-				    	if(pruneIntermediateWrites(sourceCell.getValue(), sourceBlock, sinkBlock)){
-				    		System.out.println("pruned intermediate write: "+ sourceCell.getValue()+sourceBlock+sinkBlock );
-				    	}
-				    	else
-				    	{
-				    	System.out.println("possible null pointer flow:");
-				    	System.out.println("source: "+sourceCell.getRowKey()+" "+sourceCell.getColumnKey()+" "+sourceCell.getValue());
-				    	System.out.println("sink: "+sinkCell.getRowKey()+" "+sinkCell.getColumnKey()+" "+sinkCell.getValue());
-				    	System.out.println("--------------------");
-				    	int src=ls.FindLineNo(sourceCell.getColumnKey(), sourceCell.getRowKey());
-				    	int snk=ls.FindLineNo(sinkCell.getColumnKey(), sinkCell.getRowKey());
-				    	
-				    	vh.addElement(sinkCell.getRowKey(),src,snk);
-				    	
-				    	}
-				    	
-		    	}
-			    
-			    }
-			}
+		    	sourceBlock=nodes.findNode(source,sourceCell.getRowKey());
+		    	int snk=analyzeNullFlow(sourceBlock,sourceCell.getValue());
+		    	
+		    }
 		}
 		
 		System.out.println("starting parallel analysis: ");
@@ -255,6 +231,11 @@ public class NPAnalyzer {
 			}
 		}
 		
+	}
+
+	private int analyzeNullFlow(String sourceBlock, String value) {
+		
+		return 0;
 	}
 	
 	

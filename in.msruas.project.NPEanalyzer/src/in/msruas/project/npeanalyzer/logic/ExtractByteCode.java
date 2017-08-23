@@ -19,40 +19,46 @@ public class ExtractByteCode {
 	List s;
 	LineStore ls=LineStore.getInstance();
 	
-	public boolean runjavap(List s){
-		this.s=s;
-		for(Object strobj:s){
-			String str=(String)strobj;
+	public boolean runjavap(List s) {
+		this.s = s; // the list containing the source code path and function
+					// name
+		for (Object strobj : s) {
+			String str = (String) strobj;
 			String[] str_array = str.split("\\$");
-			path=str_array[0];
-			funcName=str_array[1];
+			path = str_array[0]; // source code path
+			funcName = str_array[1]; // function name
 			path = path.replace('/', '\\');
 		}
-		command = "cd /d \"" + path.toString() + "\\bin\"";
-		String command1 = "javap -c *.class > output.txt";
-		System.out.println("command is : " + command + "---" + command1);
+		command = "cd /d \"" + path.toString() + "\\bin\""; // change directory
+															// to the source
+															// code path
+		String command1 = "javap -c *.class > output.txt"; // command to extract
+															// byte code
+
 		try {
-			File f=new File(path+"\\bin");
-			Process process = Runtime.getRuntime().exec(command1,null,f);
+			File f = new File(path + "\\bin");
+			Process process = Runtime.getRuntime().exec(command1, null, f); // run
+																			// the
+																			// command
+																			// to
+																			// extract
+																			// bytecode.
 			BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String line = null;
-			BufferedWriter bw = new BufferedWriter(new FileWriter(f.getAbsolutePath()+"\\output.txt"));
+			BufferedWriter bw = new BufferedWriter(new FileWriter(f.getAbsolutePath() + "\\output.txt")); // write
+																											// the
+																											// bytecode
+																											// to
+																											// file
 			while ((line = in.readLine()) != null) {
 				System.out.println(line);
-				bw.write(line +"\n");
-				
+				bw.write(line + "\n");
+
 			}
 			bw.flush();
-			int exitValue = process.waitFor();
-//			process = Runtime.getRuntime().exec(command1);
-//			in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-//			while ((line = in.readLine()) != null) {
-//				System.out.println(line);
-//			}
-//			exitValue = process.waitFor();
-			if (exitValue != 0) {
-				//System.out.println("*** Something Went Wrong :( !!! Abnormal process termination ***");
+			int exitValue = process.waitFor(); // wait till command runs
 
+			if (exitValue != 0) {
 				return true;
 			}
 			return true;

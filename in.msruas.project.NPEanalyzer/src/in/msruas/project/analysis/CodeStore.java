@@ -4,6 +4,7 @@ import java.util.Map;
 
 
 import com.google.common.collect.*;
+import com.google.common.collect.Table.Cell;
 public class CodeStore { 
 	private static CodeStore instance = null;
 	Table<String,Integer, String> codeTable = Tables.newCustomTable(new LinkedHashMap<>(), LinkedHashMap::new);
@@ -40,4 +41,15 @@ public class CodeStore {
 	         System.out.println("code key: " + entry.getKey() + ", value : " + entry.getValue());
 	      }
 	}
+
+	/*below function gets the code
+	 * for a given line number
+	 */
+public String getCodeAtLine(String fname,int line){
+		return 	codeTable.get(fname, line);										
+				
+			}
+	
+			
 }
+

@@ -38,7 +38,7 @@ public class SwtList extends JFrame {
 	        //create the model and add elements
 	        listModel = new DefaultListModel<>();
 	        dtm = new DefaultTableModel(0, 0);
-	        String header[] = new String[] { "filename","source", "sink"};
+	        String header[] = new String[] { "Filename","Cause", "Effect"};
 	        dtm.setColumnIdentifiers(header);
 	        jt.setModel(dtm);
 	        jt.setBounds(30,40,200,300);
@@ -48,7 +48,7 @@ public class SwtList extends JFrame {
 	        add(sp);
 	         
 	        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-	        this.setTitle("JList Example");       
+	        this.setTitle("Null Pointer Dereference");       
 	        this.setSize(200,200);
 	        this.setLocationRelativeTo(null);
 	        this.setVisible(true);
